@@ -1,0 +1,30 @@
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+
+# Define the URL of the website you want to scrape
+url = 'https://finance.yahoo.com/quote/AAPL?p=AAPL'
+
+# Send a request to fetch the HTML content of the page
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Parse the HTML to extract the stock price
+price = soup.find('fin-streamer', {'data-field': 'regularMarketPrice'}).text
+
+# Get the current date and time
+now = datetime.now()
+
+# Create a DataFrame to store the data
+data = {
+    'Date': [now],
+    'Stock': ['AAPL'],
+    'Price': [price]
+}
+df = pd.DataFrame(data)
+
+# Append the data to an existing CSV file or create a new one if it doesn't exist
+df.to_csv('stock_prices.csv', mode='a', header=False, index=False)
+
+print('Data scraped and saved successfully')
